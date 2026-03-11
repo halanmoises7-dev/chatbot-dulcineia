@@ -409,7 +409,7 @@ Olá Dulcinéia!
 
     sendButton.addEventListener('click', sendMessage);
     
-    userInput.addEventListener('keydown', e => {
+    userInput.addEventListener('keyup', e => {
         if (e.key === 'Enter') sendMessage();
     });
 
