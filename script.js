@@ -11,7 +11,7 @@
     let chatActive = true;
     let hasSelectedOption = false;
 
-    const allOptions = ['Manicure', 'Pedicure', 'Esmaltação em Gel', 'Banho de Gel','Alomgamento de Fibra de Vidro', 'Redes'];
+    const allOptions = ['Manicure', 'Pedicure', 'Esmaltação em Gel', 'Banho de Gel','Alomgamento de Fibra de Vidro','Manutenções', 'Rede Social'];
     let remainingOptions = [...allOptions];
 
     // Variáveis de Horário de Atendimento
@@ -66,7 +66,8 @@
                     case 'Esmaltação em Gel': icon = '✨💅'; break;
                     case 'Banho de Gel': icon = '💅'; break;
                     case 'Alomgamento de Fibra de Vidro': icon = '💅💎'; break;
-                    case 'Redes': icon = '🌐'; break;
+                    case 'Manutenções': icon = '💅💎'; break;
+                    case 'Rede Social': icon = '🌐'; break;
                 }
                 optionsHTML += `<button class="option-btn" data-action="select" data-option="${option}" aria-label="Opção ${option}">${icon} ${option.charAt(0).toUpperCase() + option.slice(1)}</button>`;
             });
@@ -269,7 +270,7 @@ Olá Dulcinéia!
         switch(option) {
             case 'Manicure':
                 response = `💅✨ <strong>Manicure Tradicional</strong>: Manicure tradicional é o cuidado básico e clássico das unhas das mãos.
-Ela deixa as unhas limpas, bonitas e bem cuidadas..`;
+                Ela deixa as unhas limpas, bonitas e bem cuidadas..`;
                 break;
             case 'Pedicure':
                 response = `👣 <strong>Pedicure</strong>: Pedicure é um cuidado essencial para manter os pés bonitos, saudáveis 
@@ -289,17 +290,21 @@ Ela deixa as unhas limpas, bonitas e bem cuidadas..`;
                 longas, resistentes e com acabamento natural. A técnica utiliza filamentos de fibra que são moldados sobre as unhas, proporcionando 
                 durabilidade, leveza e um resultado sofisticado.`;
                 break;
-            case 'Redes':
-                response = `🌐 <strong>Minhas Redes Sociais</strong>:<br>
-                                     <a href="https://www.instagram.com/dulcinails_designer" target="_blank">📸 Instagram</a><br>
-                                     <a href="http://wa.me//${WHATSAPP_NUMBER}" target="_blank">💬 WhatsApp</a><br>`;
+            case 'Manutenções':
+                response = `💅💎 <strong>Manutenções</strong>: A manutenção é essencial para manter suas unhas sempre lindas, resistentes e bem cuidadas.
+                Nesse processo fazemos o retoque do crescimento da unha natural, ajustamos o formato, reforçamos a estrutura e deixamos o acabamento impecável novamente.
+                Ideal para quem já tem alongamento ou banho de gel e quer manter as unhas sempre perfeitas.`;
+                break;
+            case 'Rede Social':
+                response = `🌐 <strong>Minha Rede Social</strong>:<br>
+                                     <a href="https://www.instagram.com/dulcinails_designer" target="_blank">📸 Instagram</a><br>`;
                 break;
         }
 
         remainingOptions = remainingOptions.filter(opt => opt !== option);
 
         botTyping(response, 10, () => {
-            const isService = ['Manicure', 'Pedicure', 'Esmaltação em Gel', 'Banho de Gel', 'Alomgamento de Fibra de Vidro'].includes(option);
+            const isService = ['Manicure', 'Pedicure', 'Esmaltação em Gel', 'Banho de Gel', 'Alomgamento de Fibra de Vidro', 'Manutenções'].includes(option);
 
             if (isService) {
                 const agendamentoBlock = document.createElement('div');
@@ -335,7 +340,7 @@ Ela deixa as unhas limpas, bonitas e bem cuidadas..`;
         chatActive = true;
         hasSelectedOption = false;
         remainingOptions = [...allOptions];
-        addBotResponse('Olá! 👋 Sou o assistente da Dulcinéia. Qual é o seu nome?');
+        addBotResponse('Olá! 👋 Sou a assistente da Dulcinéia. Qual é o seu nome?');
         toggleInput(true, 'Digite seu nome...');
     }
 
