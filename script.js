@@ -11,12 +11,12 @@
     let chatActive = true;
     let hasSelectedOption = false;
 
-    const allOptions = ['Manicure', 'Pedicure', 'Esmaltação em Gel', 'Banho de Gel','Alomgamento de Fibra de Vidro','Manutenções', 'Rede Social'];
+    const allOptions = ['Manicure', 'Pedicure', 'Esmaltação em Gel', 'Banho de Gel','Alongamento de Fibra de Vidro','Manutenções', 'Rede Social'];
     let remainingOptions = [...allOptions];
 
     // Variáveis de Horário de Atendimento
-    const START_HOUR = 8; // 9:00
-    const END_HOUR = 17; // 18:00
+    const START_HOUR = 8; // 8:00
+    const END_HOUR = 17; // 17:00
     const EXPEDIENT_INFO = `${START_HOUR}:00h às ${END_HOUR}:00h`;
 
     // Variáveis de Estado para o Fluxo de Agendamento
@@ -27,13 +27,22 @@
     
     // --- 2. Funções de Utilidade e DOM ---
 
+   // HORA NO CHAT
     function addMessage(sender, text) {
-        const msg = document.createElement('div');
-        msg.classList.add('message', sender, 'fade-in');
-        msg.textContent = text;
-        chatBody.appendChild(msg);
-        chatBody.scrollTop = chatBody.scrollHeight;
-    }
+
+    const hora = new Date().toLocaleTimeString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit'
+});
+
+    const msg = document.createElement('div');
+    msg.classList.add('message', sender, 'fade-in');
+
+    msg.innerHTML = text + " <span class='hora'>" + hora + "</span>";
+
+    chatBody.appendChild(msg);
+    chatBody.scrollTop = chatBody.scrollHeight;
+}
     
     function toggleInput(state, placeholder = 'Digite uma mensagem...') {
         userInput.disabled = !state;
@@ -41,13 +50,22 @@
         userInput.placeholder = state ? placeholder : 'Aguarde a resposta do assistente...';
     }
 
+    // HORA NO CHAT
     function addBotResponse(text) {
-        const msg = document.createElement('div');
-        msg.classList.add('message', 'bot', 'fade-in');
-        msg.innerHTML = text; 
-        chatBody.appendChild(msg);
-        chatBody.scrollTop = chatBody.scrollHeight;
-    }
+
+    const hora = new Date().toLocaleTimeString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit'
+});
+
+    const msg = document.createElement('div');
+    msg.classList.add('message', 'bot', 'fade-in');
+
+    msg.innerHTML = text + " <span class='hora'>" + hora + "</span>";
+
+    chatBody.appendChild(msg);
+    chatBody.scrollTop = chatBody.scrollHeight;
+}
 
     function addOptionsMessage() {
         const optionsContainer = document.createElement('div');
@@ -65,7 +83,7 @@
                     case 'Pedicure': icon = '👣'; break;
                     case 'Esmaltação em Gel': icon = '✨💅'; break;
                     case 'Banho de Gel': icon = '💅'; break;
-                    case 'Alomgamento de Fibra de Vidro': icon = '💅💎'; break;
+                    case 'Alongamento de Fibra de Vidro': icon = '💅💎'; break;
                     case 'Manutenções': icon = '💅💎'; break;
                     case 'Rede Social': icon = '🌐'; break;
                 }
@@ -253,7 +271,7 @@ Olá Dulcinéia!
         addMessage('user', text);
         userInput.value = '';
         
-        botTyping(`Para demais dúvidas, ${userName}, entre em contato comigo via <a href="http://wa.me//${WHATSAPP_NUMBER}" target="_blank">WhatsApp</a>.`, 10, () => {
+        botTyping(`Para demais dúvidas, ${userName}, entre em contato comigo via <a href="https://wa.me/${WHATSAPP_NUMBER}" target="_blank">WhatsApp</a>.`, 10, () => {
             addOptionsMessage(); 
         });
     }
@@ -285,8 +303,8 @@ Olá Dulcinéia!
                 response = `💅 <strong>Banho de Gel</strong>: Unhas naturais mais fortes e lindas! O banho de gel ajuda a proteger, fortalecer 
                 e manter suas unhas com brilho e aparência impecável por muito mais tempo.`;
                 break;
-            case 'Alomgamento de Fibra de Vidro':
-                response = `💅💎 <strong>Alomgamento de Fibra de Vidro</strong>: O alongamento em fibra de vidro é ideal para quem deseja unhas 
+            case 'Alongamento de Fibra de Vidro':
+                response = `💅💎 <strong>Alongamento de Fibra de Vidro</strong>: O alongamento em fibra de vidro é ideal para quem deseja unhas 
                 longas, resistentes e com acabamento natural. A técnica utiliza filamentos de fibra que são moldados sobre as unhas, proporcionando 
                 durabilidade, leveza e um resultado sofisticado.`;
                 break;
@@ -304,7 +322,7 @@ Olá Dulcinéia!
         remainingOptions = remainingOptions.filter(opt => opt !== option);
 
         botTyping(response, 10, () => {
-            const isService = ['Manicure', 'Pedicure', 'Esmaltação em Gel', 'Banho de Gel', 'Alomgamento de Fibra de Vidro', 'Manutenções'].includes(option);
+            const isService = ['Manicure', 'Pedicure', 'Esmaltação em Gel', 'Banho de Gel', 'Alongamento de Fibra de Vidro', 'Manutenções'].includes(option);
 
             if (isService) {
                 const agendamentoBlock = document.createElement('div');
@@ -391,7 +409,7 @@ Olá Dulcinéia!
 
     sendButton.addEventListener('click', sendMessage);
     
-    userInput.addEventListener('keypress', e => {
+    userInput.addEventListener('keydown', e => {
         if (e.key === 'Enter') sendMessage();
     });
 
