@@ -1,0 +1,157 @@
+/* --- Variáveis CSS para Cores e Fontes --- */
+:root {
+    --primary-color: #ff5593;
+    --primary-color-hover: #ff007f;
+    --whatsapp-color: #25d366;
+    --whatsapp-color-hover: #1ebe5b;
+    --error-color: #d32f2f;
+    --reset-color: #007bff;
+    --reset-color-hover: #0069d9;
+    --font-size-base: 15px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0; padding: 0; 
+    height: 100%; 
+    overflow: hidden;
+    font-family: 'Montserrat', sans-serif;
+    background: #c997a8; 
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+}
+
+.chat-container {
+    width: 100%; max-width: 450px; 
+    height: 100dvh;
+    background: white; border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    display: flex; flex-direction: column; overflow: hidden;
+}
+
+.chat-header {
+    background: var(--primary-color); color: white; padding: 15px;
+    text-align: center; font-weight: 600; font-size: 18px;
+}
+
+.chat-body {
+    flex: 1; padding: 15px; overflow-y: auto;
+    display: flex; flex-direction: column; gap: 10px;
+    scroll-behavior: smooth;
+}
+
+.message {
+    max-width: 85%; padding: 10px 14px; border-radius: 18px;
+    line-height: 1.4; font-size: var(--font-size-base); word-wrap: break-word;
+}
+
+.bot { background: #f0f0f0; align-self: flex-start; border-bottom-left-radius: 0; }
+.user { background: var(--primary-color); color: white; align-self: flex-end; border-bottom-right-radius: 0; }
+
+.options-message {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;
+}
+
+.option-btn {
+    flex: 1 1 45%; background: var(--primary-color); color: white;
+    border: none; border-radius: 10px; padding: 10px 8px;
+    font-size: 13px; cursor: pointer; 
+    transition: background 0.2s, transform 0.1s;
+    text-align: center;
+}
+
+.option-btn:hover { background: var(--primary-color-hover); }
+.option-btn:active { transform: scale(0.97); }
+.end-btn { background: var(--error-color); }
+.end-btn:hover { background: #b71c1c; }
+.reset-btn { background: var(--reset-color); }
+.reset-btn:hover { background: var(--reset-color-hover); }
+
+/* Estilo para o botão de Reiniciar Completo */
+.restart-btn {
+    background: #4CAF50; 
+    color: white;
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+.restart-btn:hover { background: #45a049; }
+
+.input-section {
+    flex-shrink: 0; background: #fff; border-top: 1px solid #eee;
+    display: flex; flex-direction: column; align-items: center; padding: 10px;
+}
+
+.input-bar {
+    display: flex; align-items: center; width: 100%;
+}
+
+.input-bar input {
+    flex: 1; padding: 10px 12px; border-radius: 12px;
+    border: 1px solid #ddd; font-size: 14px; outline: none;
+}
+
+.input-bar input:disabled { background: #f9f9f9; color: #888; }
+
+.send-btn {
+    margin-left: 8px; background: var(--primary-color); border: none;
+    color: white; border-radius: 12px; padding: 10px 14px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: 0.2s;
+}
+
+.send-btn:hover { background: var(--primary-color-hover); }
+.send-btn:active { transform: scale(0.95); }
+.send-btn:disabled { opacity: 0.5; cursor: default; }
+.send-btn svg { width: 18px; height: 18px; fill: white; }
+
+.footer {
+    font-size: 12px; color: #888; margin-top: 6px; text-align: center;
+}
+
+.typing { font-style: italic; color: #777; }
+
+.fade-in { opacity: 0; animation: fadeIn 0.5s forwards; }
+
+@keyframes fadeIn { to { opacity: 1; } }
+
+a { color: var(--primary-color); text-decoration: none; }
+.user a { color: white; }
+
+/* Estilos do Bloco de Confirmação Final */
+.whatsapp-block {
+    display: block;
+    background: #f7f7f7;
+    padding: 10px;
+    border-radius: 12px;
+    margin-top: 8px;
+    text-align: center;
+}
+
+.whatsapp-block p {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    color: #333;
+}
+
+.whatsapp-btn {
+    display: inline-block;
+    background: var(--whatsapp-color);
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+.whatsapp-btn:hover { background: var(--whatsapp-color-hover); }

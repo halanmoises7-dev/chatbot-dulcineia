@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat Interativo - Dulcinéia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="chat-container" role="main">
+        <div class="chat-header">Atendimento Dulcinéia</div>
+        <div class="chat-body" id="chatBody">
+            <div class="message bot fade-in">Olá! 👋 Sou o assistente da Dulcinéia. Qual é o seu nome?</div>
+        </div>
+
+        <div class="input-section">
+            <div class="input-bar">
+                <input type="text" id="userInput" placeholder="Digite seu nome..." aria-label="Campo de entrada de texto" />
+                <button class="send-btn" aria-label="Enviar Mensagem">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M2 21l21-9L2 3v7l15 2-15 2z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="footer">Desenvolvido por <strong>Halan Moisés</strong></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
