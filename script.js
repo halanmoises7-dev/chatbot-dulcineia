@@ -20,7 +20,7 @@
     const EXPEDIENT_INFO = `${START_HOUR}:00h às ${END_HOUR}:00h`;
 
     // Variáveis de Estado para o Fluxo de Agendamento
-    let appointmentState = 0; // 0: Menu, 3: Aguardando Horário
+    let appointmentState = 0; // 0: Menu, 1: Aguardando Data, 2: Aguardando Horário
     let requestedService = '';
     let requestedDate = '';
     let requestedTime = '';
@@ -29,20 +29,19 @@
 
    // HORA NO CHAT
     function addMessage(sender, text) {
+        const hora = new Date().toLocaleTimeString('pt-BR', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
 
-    const hora = new Date().toLocaleTimeString('pt-BR', {
-    hour: '2-digit',
-    minute: '2-digit'
-});
+        const msg = document.createElement('div');
+        msg.classList.add('message', sender, 'fade-in');
 
-    const msg = document.createElement('div');
-    msg.classList.add('message', sender, 'fade-in');
+        msg.innerHTML = text + " <span class='hora'>" + hora + "</span>";
 
-    msg.innerHTML = text + " <span class='hora'>" + hora + "</span>";
-
-    chatBody.appendChild(msg);
-    chatBody.scrollTop = chatBody.scrollHeight;
-}
+        chatBody.appendChild(msg);
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
     
     function toggleInput(state, placeholder = 'Digite uma mensagem...') {
         userInput.disabled = !state;
@@ -52,20 +51,19 @@
 
     // HORA NO CHAT
     function addBotResponse(text) {
+        const hora = new Date().toLocaleTimeString('pt-BR', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
 
-    const hora = new Date().toLocaleTimeString('pt-BR', {
-    hour: '2-digit',
-    minute: '2-digit'
-});
+        const msg = document.createElement('div');
+        msg.classList.add('message', 'bot', 'fade-in');
 
-    const msg = document.createElement('div');
-    msg.classList.add('message', 'bot', 'fade-in');
+        msg.innerHTML = text + " <span class='hora'>" + hora + "</span>";
 
-    msg.innerHTML = text + " <span class='hora'>" + hora + "</span>";
-
-    chatBody.appendChild(msg);
-    chatBody.scrollTop = chatBody.scrollHeight;
-}
+        chatBody.appendChild(msg);
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
 
     function addOptionsMessage() {
         const optionsContainer = document.createElement('div');
@@ -129,7 +127,9 @@
             if (chatActive) {
                 if (userName && appointmentState === 0) {
                     toggleInput(true, 'Digite uma mensagem...');
-                } else if (userName && appointmentState > 0) {
+                } else if (userName && appointmentState === 1) {
+                    toggleInput(true, 'Digite a data (ex: 25/10)...');
+                } else if (userName && appointmentState === 2) {
                     toggleInput(true, 'Digite o horário exato (ex: 14:00)...');
                 } else if (!userName) {
                     toggleInput(true, 'Digite seu nome...');
@@ -142,6 +142,42 @@
     
     // --- 3. Funções de Validação e Envio ---
 
+    function isValidDate(input) {
+        const dateRegex = /^(\d{1,2})\/(\d{1,2})(?:\/(\d{4}))?$/;
+        if (!dateRegex.test(input)) return { valid: false, reason: 'format' };
+
+        let [, day, month, year] = input.match(dateRegex);
+        const today = new Date();
+        
+        if (!year) {
+            year = today.getFullYear();
+        }
+
+        const dateObj = new Date(year, month - 1, day);
+        
+        // Verifica se a data é real (ex: bloqueia 31/02)
+        if (dateObj.getDate() != day || dateObj.getMonth() != month - 1 || dateObj.getFullYear() != year) {
+            return { valid: false, reason: 'invalid_date' };
+        }
+
+        // Remove a hora do dia atual para comparar apenas a data
+        today.setHours(0,0,0,0);
+        
+        if (dateObj < today) {
+            return { valid: false, reason: 'past' };
+        }
+
+        // 0 = Domingo, 1 = Segunda-feira
+        const dayOfWeek = dateObj.getDay();
+        if (dayOfWeek === 0 || dayOfWeek === 1) {
+            return { valid: false, reason: 'blocked_day' };
+        }
+
+        const formattedDay = String(day).padStart(2, '0');
+        const formattedMonth = String(month).padStart(2, '0');
+        return { valid: true, date: `${formattedDay}/${formattedMonth}/${year}` };
+    }
+
     function isValidTimeInExpedient(input) {
         const timeInput = input.includes(':') ? input : input + ':00'; 
         const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/; 
@@ -153,11 +189,9 @@
         return hours >= START_HOUR && hours < END_HOUR;
     }
 
-    function startTodayScheduling(service) {
+    function startScheduling(service) {
         requestedService = service.charAt(0).toUpperCase() + service.slice(1);
-        requestedDate = new Date().toLocaleDateString('pt-BR'); 
-        
-        appointmentState = 3; 
+        appointmentState = 1; // Vai para o estado 1: Aguardando Data
         handleAppointmentFlow(''); 
     }
 
@@ -168,7 +202,7 @@ Olá Dulcinéia!
 *SOLICITAÇÃO DE AGENDAMENTO (Via ChatBot)*
 *Cliente:* ${userName}
 *Serviço:* ${requestedService}
-*Dia:* ${requestedDate} (HOJE)
+*Data:* ${requestedDate}
 *Horário Sugerido:* ${requestedTime}
 
 *Aguardando sua confirmação de disponibilidade.*
@@ -182,17 +216,52 @@ Olá Dulcinéia!
     // --- 4. Lógica do Fluxo de Agendamento ---
 
     function handleAppointmentFlow(input) {
-        if (input && appointmentState === 3) { 
+        if (input && appointmentState > 0) { 
             addMessage('user', input);
         }
         userInput.value = '';
         toggleInput(false);
         
-        if (appointmentState === 3) {
+        if (appointmentState === 1) { // Etapa 1: Solicitar Data
+            const dateInput = input.trim();
+
+            if (dateInput === '') {
+                let responseInfo = `Ótima escolha! Para o serviço de <strong>${requestedService}</strong>, qual data você deseja agendar?`;
+                responseInfo += `<br>Por favor, <strong>digite a data</strong> (Ex: 25/10 ou 25/10/2024).`;
+                responseInfo += `<br><em>Obs: Não atendemos aos domingos e segundas-feiras.</em>`;
+                botTyping(responseInfo, 10, () => {
+                    toggleInput(true, 'Digite a data (Ex: 25/10)...');
+                });
+                return;
+            }
+
+            const validation = isValidDate(dateInput);
+            
+            if (!validation.valid) {
+                let responseError = '';
+                if (validation.reason === 'format' || validation.reason === 'invalid_date') {
+                    responseError = `Data inválida. Por favor, digite no formato <strong>DD/MM</strong> (Ex: 25/10).`;
+                } else if (validation.reason === 'past') {
+                    responseError = `Não é possível agendar em datas passadas. Por favor, digite uma data futura.`;
+                } else if (validation.reason === 'blocked_day') {
+                    responseError = `Não funcionamos aos domingos e segundas-feiras. Por favor, escolha outro dia.`;
+                }
+                
+                botTyping(responseError, 10, () => { toggleInput(true, 'Digite a data desejada (Ex: 25/10)...'); });
+                return;
+            }
+
+            requestedDate = validation.date;
+            appointmentState = 2; // Avança para a etapa de solicitar o horário
+            handleAppointmentFlow(''); // Aciona a próxima etapa automaticamente
+            return;
+        }
+
+        if (appointmentState === 2) { // Etapa 2: Solicitar Horário
             const timeInput = input.trim(); 
 
             if (timeInput === '') {
-                let responseInfo = `Certo! Para <strong>${requestedService}</strong> hoje (${requestedDate}), nosso expediente é de <strong>${EXPEDIENT_INFO}</strong>.`;
+                let responseInfo = `Certo! Para o dia <strong>${requestedDate}</strong>, nosso expediente é de <strong>${EXPEDIENT_INFO}</strong>.`;
                 responseInfo += `<br>Por favor, <strong>digite o horário exato</strong> que você gostaria de ser atendido (Ex: 10:00 ou 16:30).`;
                 botTyping(responseInfo, 10, () => {
                     toggleInput(true, 'Digite o horário desejado (Ex: 14:00)...');
@@ -210,10 +279,10 @@ Olá Dulcinéia!
             
             // FINALIZAÇÃO DO FLUXO
             let responseFinal = `✅ <strong>Solicitação de Agendamento Finalizada!</strong>`;
-            responseFinal += `<br>Seu horário sugerido para <strong>${requestedService}</strong> hoje (${requestedDate}) é <strong>${requestedTime}</strong>.`;
+            responseFinal += `<br>Seu horário sugerido para <strong>${requestedService}</strong> no dia <strong>${requestedDate}</strong> é às <strong>${requestedTime}</strong>.`;
             responseFinal += `<br>Para que eu possa <strong>confirmar sua reserva</strong>, clique no botão abaixo para me enviar os dados pelo WhatsApp.`;
 
-            appointmentState = 0; 
+            appointmentState = 0; // Reseta o estado
 
             botTyping(responseFinal, 10, () => {
                 const finalBlock = document.createElement('div');
@@ -331,9 +400,9 @@ Olá Dulcinéia!
                 const serviceLabel = option.charAt(0).toUpperCase() + option.slice(1);
                 
                 agendamentoBlock.innerHTML = `
-                    <p>Se você gostou de <strong>${serviceLabel}</strong>, inicie uma solicitação de agendamento para <strong>HOJE</strong>!</p>
+                    <p>Se você gostou de <strong>${serviceLabel}</strong>, inicie uma solicitação de agendamento!</p>
                     <div class="options-message">
-                        <button class="option-btn" data-action="schedule-today" data-service="${option}">📅 Solicitar Agendamento para Hoje</button>
+                        <button class="option-btn" data-action="schedule" data-service="${option}">📅 Solicitar Agendamento</button>
                     </div>
                 `;
                 chatBody.appendChild(agendamentoBlock);
@@ -395,9 +464,9 @@ Olá Dulcinéia!
 
         if (action === 'select' && option) {
             selectOption(option);
-        } else if (action === 'schedule-today' && service) {
+        } else if (action === 'schedule' && service) {
             toggleInput(false); 
-            startTodayScheduling(service);
+            startScheduling(service);
         } else if (action === 'end') {
             endChat();
         } else if (action === 'reset') {
