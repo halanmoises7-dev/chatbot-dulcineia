@@ -227,7 +227,7 @@ Olá Dulcinéia!
 
             if (dateInput === '') {
                 let responseInfo = `Ótima escolha! Para o serviço de <strong>${requestedService}</strong>, qual data você deseja agendar?`;
-                responseInfo += `<br>Por favor, <strong>digite a data</strong> (Ex: 25/10 ou 25/10/2024).`;
+                responseInfo += `<br>Por favor, <strong>digite a data</strong> (Ex: 25/07 ou 25/07/2026).`;
                 responseInfo += `<br><em>Obs: Não atendemos aos domingos e segundas-feiras.</em>`;
                 botTyping(responseInfo, 10, () => {
                     toggleInput(true, 'Digite a data (Ex: 25/10)...');
